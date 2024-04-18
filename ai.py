@@ -77,7 +77,7 @@ def get_user_message_history(user):
     filter={
     '$or': [
         {
-            'od': 'aaxile'
+            'od': user
         }, {
             '$and': [
                 {
@@ -92,7 +92,7 @@ def get_user_message_history(user):
     sort=list({
         'data': -1
     }.items())
-    limit=6
+    limit=3
     result = dbClient['donjohn']['TwitchMessages'].find(
     filter=filter,
     sort=sort,
