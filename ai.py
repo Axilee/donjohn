@@ -105,7 +105,25 @@ def get_user_message_history(user):
         calosc = f"<user>{od}</user><text>{msg}</text>\n"
         historia+=calosc
     return historia
-
+def get_chat_history():
+    historia = 'Here is a history of the twitch chat before this message from everyone, reference it if possible: '
+    filter={}
+    sort=list({
+    'data': -1
+    }.items())
+    limit=40
+    result = dbClient['donjohn']['TwitchMessages'].find(
+    filter=filter,
+    sort=sort,
+    limit=limit
+    )
+    for document in result:
+        msg = document['wiadomość']
+        msg = stripcommand(msg)
+        od = document['od']
+        calosc = f"<user>{od}</user><text>{msg}</text>\n"
+        historia+=calosc
+    return historia
 
 
 
@@ -136,6 +154,8 @@ class Bot(commands.Bot):
     async def dj(self, ctx: commands.Context):
         wiadomosc = stripcommand(ctx.message.content)
         kontekst = get_user_message_history(ctx.message.author.name)
+        historia = get_chat_history()
+        kontekst+= historia
         odp = send_to_ai(wiadomosc, 'DonJohn', kontekst)
         await ctx.send(odp)
         #zapisz odpowiedz bota do db, z polem odpowiada_dla, żeby potem mieć kontekst per user
